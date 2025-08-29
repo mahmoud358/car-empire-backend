@@ -11,7 +11,8 @@ const supplierSchema = new mongoose.Schema({
   phoneNumber: {
     type: String,
     required: [ true,"رقم الجوال مطلوب"],
-    match: [/^(009665|9665|\+9665|05|5)(5|0|3|6|4|9|1|8|7)([0-9]{7})$/, "رقم الجوال غير صالح"]
+    match: [/^(009665|9665|\+9665|05|5)(5|0|3|6|4|9|1|8|7)([0-9]{7})$/, "رقم الجوال غير صالح"],
+    unique: [true, "رقم الجوال مستخدم من قبل"],
   },
   funding: [{
     type: String,
