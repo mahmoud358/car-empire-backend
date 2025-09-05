@@ -24,9 +24,9 @@ const jobRoutes = require("./routes/job");
 app.use("/job", jobRoutes);
 
 const supplierRouter = require("./routes/supplier");
-app.use("/api/supplier", supplierRouter);
+app.use("/supplier", supplierRouter);
 const carRouter = require("./routes/car");
-app.use("/api/car", carRouter);
+app.use("/car", carRouter);
 
 
 
