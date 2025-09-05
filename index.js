@@ -16,6 +16,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const userRoutes = require("./routes/user");
+app.use("/user", userRoutes);
+const blogRoutes = require("./routes/blog");
+app.use("/blog", blogRoutes);
+const jobRoutes = require("./routes/job");
+app.use("/job", jobRoutes);
 
 const supplierRouter = require("./routes/supplier");
 app.use("/api/supplier", supplierRouter);
