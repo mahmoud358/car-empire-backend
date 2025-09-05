@@ -18,6 +18,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const userRoutes = require("./routes/user");
+app.use("/user", userRoutes);
+const blogRoutes = require("./routes/blog");
+app.use("/blog", blogRoutes);
+const jobRoutes = require("./routes/job");
+app.use("/job", jobRoutes);
 
 // app.all("*", (req, res, next) => {
 //   res.status(404).json({ "status": "Failed", "message": "Page not found" });
