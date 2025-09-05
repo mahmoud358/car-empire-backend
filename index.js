@@ -5,20 +5,24 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 
-// ✅ Connect MongoDB
+
 mongoose.connect(process.env.DATABASE_URL)
   .then(() => console.log("✅ Connected to MongoDB"))
   .catch((err) => console.error("❌ DB Connection Error:", err));
 
 const app = express();
 
-// ✅ Middlewares
+
 app.use(cors());
 app.use(express.json());
 
-// ✅ Routes
+
 const supplierRouter = require("./routes/supplier");
 app.use("/api/supplier", supplierRouter);
+const carRouter = require("./routes/car");
+app.use("/api/car", carRouter);
+
+
 
 // ✅ 404 Handler (Catch-all)
 app.use((req, res, next) => {
