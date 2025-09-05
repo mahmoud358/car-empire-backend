@@ -1,12 +1,13 @@
 jwt = require("jsonwebtoken");
 
 const util = require("util");
+const APIERROR = require("../utils/apiError")
 
 exports.auth = async function (req, res, next) {
   let { authorization } = req.headers;
 
   if (!authorization) {
-    return res.status(401).json({ massage: "please login first " });
+    next( new APIERROR(401, "قم بتسجيل الدخول اولا"));
   }
 
   try {
@@ -20,16 +21,14 @@ exports.auth = async function (req, res, next) {
     req.phoneNumber=decoded.phoneNumber
     next();
   } catch (err) {
-    return res.status(401).json({ massage: "you are not authonticated" });
+    next( new APIERROR(401, "قم بتسجيل الدخول اولا"));
   }
 };
 
 exports.restrictTo = function (...roles) {
   return function (req, res, next) {
     if (!roles.includes(req.role)) {
-      return res
-        .status(403)
-        .json({ massege: "ليس لديك الصلاحية للقيام بهذا الإجراء" });
+      next( new APIERROR(403, "ليس لديك الصلاحية للقيام بهذا الإجراء "));
     }
     next();
   };
