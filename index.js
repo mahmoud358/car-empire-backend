@@ -2,47 +2,56 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const swaggerSpec = require("./swagger.js");
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./swagger.js');
 
 dotenv.config();
 
-// ✅ Connect to MongoDB
+
 mongoose.connect(process.env.DATABASE_URL)
   .then(() => console.log("✅ Connected to MongoDB"))
   .catch((err) => console.error("❌ DB Connection Error:", err));
 
 const app = express();
 
+
 app.use(cors());
 app.use(express.json());
 
-// ✅ Serve Swagger JSON (to be consumed by Swagger UI static in /public)
-app.get("/swagger.json", (req, res) => {
-  res.setHeader("Content-Type", "application/json");
+// Swagger UI setup
+// app.use('/api-docs/', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+// ✅ Serve Swagger JSON directly
+app.get('/swagger.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
   res.send(swaggerSpec);
 });
 
-// ✅ Your routes
+app.use(
+  '/api-docs',
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, { explorer: true })
+);
+
+
 const userRoutes = require("./routes/user");
 app.use("/user", userRoutes);
-
 const blogRoutes = require("./routes/blog");
 app.use("/blog", blogRoutes);
-
 const jobRoutes = require("./routes/job");
 app.use("/job", jobRoutes);
 
 const supplierRouter = require("./routes/supplier");
 app.use("/supplier", supplierRouter);
-
 const carRouter = require("./routes/car");
 app.use("/car", carRouter);
+
+
 
 // ✅ 404 Handler (Catch-all)
 app.use((req, res, next) => {
   res.status(404).json({
     status: "Failed",
-    message: "Page not found",
+    message: "Page not found"
   });
 });
 
@@ -64,7 +73,7 @@ app.use((error, req, res, next) => {
 
   res.status(statusCode).json({
     status: "fail",
-    message,
+    message
   });
 });
 
