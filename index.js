@@ -2,6 +2,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./swagger.js');
 
 dotenv.config();
 
@@ -15,6 +17,9 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+// Swagger UI setup
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 const userRoutes = require("./routes/user");
 app.use("/user", userRoutes);
