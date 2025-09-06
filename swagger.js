@@ -1,4 +1,5 @@
 const swaggerJsdoc = require('swagger-jsdoc');
+const path = require('path');
 
 const options = {
   definition: {
@@ -11,7 +12,7 @@ const options = {
     servers: [
       {
         url: 'https://car-empire-backend.vercel.app',
-        description: 'Development server',
+        description: 'Production server',
       },
     ],
     components: {
@@ -24,7 +25,14 @@ const options = {
       },
     },
   },
-  apis: ['./routes/*.js'], // Path to the API routes
+  apis: [
+    path.join(__dirname, 'routes/*.js'),
+    path.join(__dirname, 'routes/user.js'),
+    path.join(__dirname, 'routes/blog.js'),
+    path.join(__dirname, 'routes/job.js'),
+    path.join(__dirname, 'routes/supplier.js'),
+    path.join(__dirname, 'routes/car.js')
+  ], // More explicit paths for better compatibility
 };
 
 module.exports = swaggerJsdoc(options);
