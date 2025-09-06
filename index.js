@@ -19,17 +19,7 @@ app.use(cors());
 app.use(express.json());
 
 // Swagger UI setup
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
-  swaggerOptions: {
-    url: '/api-docs/swagger.json'
-  }
-}));
-
-// Serve the swagger.json file
-app.get('/api-docs/swagger.json', (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.send(swaggerSpec);
-});
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 const userRoutes = require("./routes/user");
 app.use("/user", userRoutes);
