@@ -26,8 +26,12 @@ app.get('/swagger.json', (req, res) => {
   res.send(swaggerSpec);
 });
 
-// Serve Swagger UI static
-app.use('/swagger-ui', express.static('public/swagger-ui'));
+
+// app.use(
+//   '/api-docs',
+//   swaggerUi.serve,
+//   swaggerUi.setup(swaggerSpec, { explorer: true })
+// );
 
 
 const userRoutes = require("./routes/user");
