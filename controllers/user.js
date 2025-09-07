@@ -124,6 +124,27 @@ const updateUserById = async (req, res , next) => {
     }
 };
 
+const updatePassword= async (req, res , next)=>{
+
+  try{
+    var { currentPassword, newPassword } = req.body;
+
+    userFunctions.validateUpdatePasswordInput(currentPassword,newPassword);
+    
+    const user= await userFunctions.getUserById(req.id)
+    
+    await userFunctions.comparePassword(currentPassword,user.password)
+   
+    
+    user.password = newPassword;
+    await user.save();
+    res.status(200).json({status:"success",message:"تم تحديث كلمة المرور بنجاح"});
+    }catch(error){
+      next(new APIERROR(error.statusCode||400,error.message));
+    }
+
+}
+
 
 const deleteUserById = async (req, res , next) => {
     try {
@@ -149,5 +170,6 @@ module.exports = {
     createUser,
     updateUserById,
     deleteUserById,
-    login
+    login,
+    updatePassword
 };

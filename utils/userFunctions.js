@@ -71,9 +71,6 @@ const deleteFieldsFromUpdatedObj=(delFields,updatedObj)=>{
 
 const checkEqualtyIDAndRoleForUpdate=(incomeID,updatedID,incomeRole,updateUser)=>{
 
-  console.log("incomeRole",incomeRole)
-  console.log("incomeID",incomeID)
-  console.log("updatedID",updatedID)
   if(incomeRole===userRole.ADMIN){
     updateUser=  deleteFieldsFromUpdatedObj(["password"],updateUser)
     return updateUser
@@ -88,5 +85,29 @@ const checkEqualtyIDAndRoleForUpdate=(incomeID,updatedID,incomeRole,updateUser)=
 
 }
 
+const validateUpdatePasswordInput=(currPassword,newPassword)=>{
 
-module.exports = { validateLoginInput, checkUserAndPassword, generateToken , checkValidityRole,checkEqualtyIDAndRoleForUpdate};
+  if(!currPassword || !newPassword){
+    throw new APIERROR(400, "يرجى إدخال كلمة المرور الحالية و كلمة المرور الجديدة")
+  }
+
+}
+
+const getUserById=async(id)=>{
+
+  const user=await userModel.findById(id)
+  if(!user){
+    throw new APIERROR(404, "المستخدم غير موجود")
+  }
+  return user
+}
+
+const comparePassword= async(currPassword,userPassword)=>{
+
+  const passwordValid = await bcryptjs.compare(currPassword, userPassword);
+  if (!passwordValid) throw new APIERROR(400, "كلمة المرور الحالية أو كلمة المرور الجديدة غير صحيحة");
+  
+}
+
+
+module.exports = { validateLoginInput, checkUserAndPassword, generateToken , checkValidityRole,checkEqualtyIDAndRoleForUpdate,validateUpdatePasswordInput,getUserById,comparePassword};
