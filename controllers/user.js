@@ -102,9 +102,11 @@ const login = async (req, res, next) => {
 
 const updateUserById = async (req, res , next) => {
     try {
+       const updateUser = userFunctions.checkEqualtyIDAndRoleForUpdate(req.id, req.params.id, req.role, req.body);
+    
         let user = await userModel.findByIdAndUpdate(
             req.params.id, 
-            req.body, 
+            updateUser, 
             { new: true, runValidators: true } 
         );
 
@@ -118,7 +120,7 @@ const updateUserById = async (req, res , next) => {
             data: user
         });
     } catch (error) {
-        next(new APIERROR(400, error.message));
+        next(new APIERROR(error.statusCode||400, error.message));
     }
 };
 
