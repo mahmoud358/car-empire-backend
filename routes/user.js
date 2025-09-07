@@ -76,10 +76,19 @@ const {
 router.post("/", auth, restrictTo(userRole.ADMIN, userRole.SUPERVISOR), createUser);
 /**
 * @swagger
-* /user:
+* /user/by/{role}:
 *   get:
-*     summary: Get all users
+*     summary: Get users by role
+*     security:
+*       - bearerAuth: []
 *     tags: [Users]
+*     parameters:
+*       - in: path
+*         name: role
+*         required: true
+*         schema:
+*           type: string
+*         description: User role (admin, supervisor, employee)
 *     responses:
 *       200:
 *         description: List of all users
@@ -92,12 +101,14 @@ router.post("/", auth, restrictTo(userRole.ADMIN, userRole.SUPERVISOR), createUs
 *       404:
 *         description: No users found
 */
-router.get("/", getAllUsers);
+router.get("/by/:role",auth, restrictTo(userRole.ADMIN, userRole.SUPERVISOR), getAllUsers);
 /**
 * @swagger
 * /user/{id}:
 *   get:
 *     summary: Get user by ID
+*     security:
+*       - bearerAuth: []
 *     tags: [Users]
 *     parameters:
 *       - in: path
@@ -112,7 +123,7 @@ router.get("/", getAllUsers);
 *       404:
 *         description: User not found
 */
-router.get("/:id", getUserById);
+router.get("/:id",auth, restrictTo(userRole.ADMIN, userRole.SUPERVISOR,userRole.EMPLOYEE), getUserById);
 /**
  * @swagger
  * /user/{id}:
@@ -144,7 +155,7 @@ router.get("/:id", getUserById);
  *       403:
  *         description: Forbidden - insufficient permissions
  */
-router.put("/:id", updateUserById);
+router.put("/:id",auth, restrictTo(userRole.ADMIN, userRole.SUPERVISOR,userRole.EMPLOYEE), updateUserById);
 /**
  * @swagger
  * /user/{id}:
@@ -166,7 +177,7 @@ router.put("/:id", updateUserById);
  *       404:
  *         description: User not found
  */
-router.delete("/:id", auth, restrictTo(userRole.ADMIN, userRole.SUPERVISOR), deleteUserById);
+router.delete("/:id", auth, restrictTo(userRole.ADMIN), deleteUserById);
 /**
 * @swagger
 * /user/login:
@@ -182,10 +193,28 @@ router.delete("/:id", auth, restrictTo(userRole.ADMIN, userRole.SUPERVISOR), del
 *             required:
 *               - phoneNumber
 *               - password
+*               - country
+*               - city
+*               - latitude
+*               - longitude
+*               - ip
+*               - browser
 *             properties:
 *               phoneNumber:
 *                 type: string
 *               password:
+*                 type: string
+*               country:
+*                 type: string
+*               city:
+*                 type: string
+*               latitude:
+*                 type: string
+*               longitude:
+*                 type: string
+*               ip:
+*                 type: string
+*               browser:
 *                 type: string
 *     responses:
 *       200:

@@ -21,15 +21,13 @@ const addCar = async (req, res,next)=>{
 
     }catch (error){
      
-      next(error);
+      next(new APIERROR(error.statusCode||400, error.message));
     }
 }
 
 const getAllCar=  async (req, res,next)=>{
     try{
-        const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
+      const{limit, page, skip}=getPagination(req.query);
     const filterObj= carFunctions.getfilterObj(req.query);
     console.log(filterObj);
     
@@ -103,7 +101,7 @@ const updateCar = async (req, res, next) => {
       data: car
     });
   } catch (error) {
-    next(error);
+    next(new APIERROR(error.statusCode||400, error.message));
   }
 };
 

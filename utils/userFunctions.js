@@ -2,6 +2,7 @@ const userModel = require("../models/user");
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const APIERROR = require("../utils/apiError");
+const userRole = require("./user-roles");
 
 function validateLoginInput(body) {
   const { phoneNumber, password } = body;
@@ -34,4 +35,42 @@ function generateToken(user) {
   );
 }
 
-module.exports = { validateLoginInput, checkUserAndPassword, generateToken };
+const checkValidityRole = (actionUserRole, currentUserRole) => {
+  // // roleHierarchy هنا مش بس ترتيب، لكن هانستعملها في المقارنة
+  // const roleHierarchy = {
+  //   [userRole.ADMIN]: 3,
+  //   [userRole.SUPERVISOR]: 2,
+  //   [userRole.EMPLOYEE]: 1,
+  // };
+
+  // Admin logic
+  if (currentUserRole === userRole.ADMIN) {
+    // Admin يقدر يضيف Admin أو أقل
+    return true;
+  }
+
+  // Supervisor logic
+  if (currentUserRole === userRole.SUPERVISOR) {
+    if (actionUserRole === userRole.EMPLOYEE) {
+      return true;
+    } else {
+      
+       throw new APIERROR(403, "ليس لديك الصلاحية لاتخاذ هذا الاجراء")
+      
+    }
+  }
+
+  // Employee logic
+  if (currentUserRole === userRole.EMPLOYEE) {
+    
+    throw  new APIERROR(403, "الموظف لا يمتلك صلاحية لإضافة مستخدمين")
+  }
+
+  // // Default (لو الرول مش معروف)
+  // return next(
+  //   new APIERROR(403, "دور المستخدم غير معروف")
+  // );
+};
+
+
+module.exports = { validateLoginInput, checkUserAndPassword, generateToken , checkValidityRole};
