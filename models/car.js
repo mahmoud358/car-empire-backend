@@ -49,11 +49,11 @@ const carSchema = new mongoose.Schema({
   specifications: {
     brand: makeLocalizedString(true,"الماركة"),
     model: makeLocalizedString(true,"الموديل"),
-    category: makeLocalizedString(true,"الفئة"),
+    category: makeLocalizedString(false,"الفئة"),
     body: makeLocalizedString(true,"الجسم"),
-    transmission: makeLocalizedStringAndEnum(["يدوي","اوتوماتيك"],["Manual", "Automatic"],"نوع КП"),
-    fuelType: makeLocalizedStringAndEnum(["بنزين","ديزل","كهرباء","هايبرد"],["Petrol", "Diesel", "Electric", "Hybrid"],"نوع الوقود"),
-    mileage: makeLocalizedString(true,"المسافة المقطوعة"),
+    transmission: makeLocalizedString(true,"نوع ناقل الحركة"),
+    fuelType: makeLocalizedStringAndEnum(["بنزين","ديزل","كهربائي","هجين","غاز طبيعي","هيدروجين"],["Gasoline", "Diesel", "Electric", "Hybrid","Natural Gas","Hydrogen"],"نوع الوقود"),
+    mileage: makeLocalizedString(false,"المسافة المقطوعة"),
     drivetrain: makeLocalizedString(true,"نظام المحرك"),
     year: {
       type: Number,
@@ -62,9 +62,9 @@ const carSchema = new mongoose.Schema({
       max: [new Date().getFullYear()+1, "سنة الصنع لا يمكن أن تكون في المستقبل"]
     },
     engine: makeLocalizedString(false,"نوع المحرك"),
-    origin: makeLocalizedString(true,"البلد"),
-    exteriorColor: makeLocalizedString(true,"اللون الخارجي"),
-    interiorColor: makeLocalizedString(true,"اللون الداخلي"),
+    origin: makeLocalizedString(false,"البلد"),
+    exteriorColor: makeLocalizedString(false,"اللون الخارجي"),
+    interiorColor: makeLocalizedString(false,"اللون الداخلي"),
     turbo: makeLocalizedString(false,"توربو"),
   },
 
