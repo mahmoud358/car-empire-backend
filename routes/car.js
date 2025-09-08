@@ -45,6 +45,90 @@ const router=express.Router()
  *                   type: string
  *                 en:
  *                   type: string
+ *             model:
+ *               type: object
+ *               properties:
+ *                 ar:
+ *                   type: string
+ *                 en:
+ *                   type: string
+ *             category:
+ *               type: object
+ *               properties:
+ *                 ar:
+ *                   type: string
+ *                 en:
+ *                   type: string
+ *             body:
+ *               type: object
+ *               properties:
+ *                 ar:
+ *                   type: string
+ *                 en:
+ *                   type: string
+ *             transmission:
+ *               type: object
+ *               properties:     
+ *                 ar:
+ *                   type: string
+ *                 en:
+ *                   type: string
+ *             fuelType:
+ *               type: object
+ *               properties:  
+ *                 ar:
+ *                   type: string
+ *                 en:
+ *                   type: string
+ *             mileage:
+ *               type: object
+ *               properties:
+ *                 ar:
+ *                   type: string
+ *                 en:
+ *                   type: string
+ *             drivetrain:
+ *               type: object
+ *               properties:
+ *                 ar:
+ *                   type: string
+ *                 en:
+ *                   type: string
+ *             engine:
+ *               type: object
+ *               properties:
+ *                 ar:
+ *                   type: string
+ *                 en:
+ *                   type: string
+ *             origin:
+ *               type: object
+ *               properties:
+ *                 ar:
+ *                   type: string
+ *                 en:
+ *                   type: string
+ *             exteriorColor:
+ *               type: object
+ *               properties:
+ *                 ar:
+ *                   type: string
+ *                 en:
+ *                   type: string
+ *             interiorColor:
+ *               type: object
+ *               properties:
+ *                 ar:
+ *                   type: string
+ *                 en:
+ *                   type: string
+ *             turbo:
+ *               type: object
+ *               properties:
+ *                 ar:
+ *                   type: string
+ *                 en:
+ *                   type: string
  *             year:
  *               type: number
  *         cashPrice:

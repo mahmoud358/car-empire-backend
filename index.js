@@ -8,7 +8,9 @@ const swaggerSpec = require('./swagger.js');
 dotenv.config();
 
 
-mongoose.connect(process.env.DATABASE_URL)
+mongoose.connect(process.env.DATABASE_URL,{
+  serverSelectionTimeoutMS: 5000, // بدلاً من الانتظار 30 ثانية
+})
   .then(() => console.log("✅ Connected to MongoDB"))
   .catch((err) => console.error("❌ DB Connection Error:", err));
 
