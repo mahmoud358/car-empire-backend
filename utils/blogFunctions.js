@@ -8,22 +8,21 @@ async function createBlogFn(data) {
 }
 
 
-async function getAllBlogsFn(query) {
-  const page = parseInt(query.page) || 1;
-  const limit = parseInt(query.limit) || 10;
-  const skip = (page - 1) * limit;
-
+async function getAllBlogsFn(limit,skip) {
+ 
+try {
   const blogs = await Blog.find()
-    .sort({ createdAt: -1 })
-    .skip(skip)
-    .limit(limit)
-    .lean();
-
-  if (blogs.length === 0) {
-    throw new APIERROR(404, "لا يوجد مقالات");
-  }
+   .sort({ createdAt: -1 })
+   .skip(skip)
+   .limit(limit)
+   .lean();
 
   return blogs;
+} catch (error) {
+  
+  throw new APIERROR(400,error.message);
+}
+  
 }
 
 

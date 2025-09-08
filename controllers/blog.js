@@ -1,3 +1,4 @@
+const blog = require("../models/blog");
 const APIERROR = require("../utils/apiError");
 const {
   createBlogFn,
@@ -24,14 +25,23 @@ const createBlog = async (req, res, next) => {
 
 const getAllBlogs = async (req, res, next) => {
   try {
-    const blogs = await getAllBlogsFn(req.query);
+    const{limit, page, skip}=getPagination(req.query)
+    const[blogs,total]=await Promise.all([
+      getAllBlogsFn(limit,skip),
+      blog.countDocuments()
+    ])
     res.status(200).json({
       status: "success",
       message: "تم الحصول على كل المقالات بنجاح",
-      blogs,
+      data:blogs,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
+        totalItems: total,
+      }
     });
   } catch (error) {
-    next(new APIERROR(400, error.message));
+    next(new APIERROR(error.statusCode||400, error.message));
   }
 };
 
@@ -52,7 +62,7 @@ const getBlogById = async (req, res, next) => {
 
 const updateBlogById = async (req, res, next) => {
   try {
-    const blog = await updateBlogByIdFn(req.params.id, req.body);
+    const blog = await updateBlogByIdFn(req.params.id, req.body,{ new: true, runValidators: true });
     res.status(200).json({
       status: "success",
       message: "تم تحديث المقال بنجاح",

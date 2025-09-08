@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { auth, restrictTo } = require("../middlewares/auth");
+const userRole = require("../utils/user-roles");
 const {
   createBlog,
   getAllBlogs,
@@ -56,7 +57,7 @@ const {
  *       401:
  *         description: Unauthorized
  */
-router.post("/",auth, restrictTo("admin"), createBlog);
+router.post("/",auth, restrictTo(userRole.ADMIN), createBlog);
 /**
  * @swagger
  * /blog:
@@ -119,7 +120,7 @@ router.get("/:id", getBlogById);
  *       404:
  *         description: Blog post not found
  */
-router.put("/:id",auth, restrictTo("admin"), updateBlogById);
+router.put("/:id",auth, restrictTo(userRole.ADMIN), updateBlogById);
 /**
  * @swagger
  * /blog/{id}:
@@ -139,5 +140,5 @@ router.put("/:id",auth, restrictTo("admin"), updateBlogById);
  *       404:
  *         description: Blog post not found
  */
-router.delete("/:id",auth, restrictTo("admin"), deleteBlogById);
+router.delete("/:id",auth, restrictTo(userRole.ADMIN), deleteBlogById);
 module.exports = router;
