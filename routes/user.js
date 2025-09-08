@@ -8,7 +8,8 @@ const {
   createUser,
   updateUserById,
   deleteUserById,
-  login
+  login,
+  updatePassword
 } = require("../controllers/user");
 
 /**
@@ -230,4 +231,38 @@ router.delete("/:id", auth, restrictTo(userRole.ADMIN), deleteUserById);
 *         description: Invalid credentials
 */
 router.post("/login", login);
+/**
+* @swagger
+* /user/update/password:
+*   put:
+*     summary: Update user password
+*     security:
+*       - bearerAuth: []
+*     tags: [Users]
+*     requestBody:
+*       required: true
+*       content:
+*         application/json:
+*           schema:
+*             type: object
+*             required:
+*               - currentPassword
+*               - newPassword
+*             properties:
+*               currentPassword:
+*                 type: string
+*               newPassword:
+*                 type: string
+*     responses:
+*       200:
+*         description: Password updated successfully
+*       400:
+*         description: Invalid input
+*       401:
+*          description: Unauthorized
+*       403:
+*         description: Forbidden - insufficient permissions
+*/
+router.put("/update/password",auth, restrictTo(userRole.ADMIN, userRole.SUPERVISOR,userRole.EMPLOYEE), updatePassword);
+
 module.exports = router;

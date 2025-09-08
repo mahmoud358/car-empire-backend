@@ -31,17 +31,11 @@ function generateToken(user) {
       username: user.userName,
     },
     process.env.SECRET,
-    { expiresIn: "1d" }
+    // { expiresIn: "1d" }
   );
 }
 
 const checkValidityRole = (actionUserRole, currentUserRole) => {
-  // // roleHierarchy هنا مش بس ترتيب، لكن هانستعملها في المقارنة
-  // const roleHierarchy = {
-  //   [userRole.ADMIN]: 3,
-  //   [userRole.SUPERVISOR]: 2,
-  //   [userRole.EMPLOYEE]: 1,
-  // };
 
   // Admin logic
   if (currentUserRole === userRole.ADMIN) {
@@ -65,12 +59,55 @@ const checkValidityRole = (actionUserRole, currentUserRole) => {
     
     throw  new APIERROR(403, "الموظف لا يمتلك صلاحية لإضافة مستخدمين")
   }
-
-  // // Default (لو الرول مش معروف)
-  // return next(
-  //   new APIERROR(403, "دور المستخدم غير معروف")
-  // );
 };
 
+const deleteFieldsFromUpdatedObj=(delFields,updatedObj)=>{
 
-module.exports = { validateLoginInput, checkUserAndPassword, generateToken , checkValidityRole};
+  delFields.forEach((field)=>{
+    delete updatedObj[field]
+  })
+  return updatedObj
+}
+
+const checkEqualtyIDAndRoleForUpdate=(incomeID,updatedID,incomeRole,updateUser)=>{
+
+  if(incomeRole===userRole.ADMIN){
+    updateUser=  deleteFieldsFromUpdatedObj(["password"],updateUser)
+    return updateUser
+  }
+  
+    if(incomeID===updatedID){
+      updateUser= deleteFieldsFromUpdatedObj(["password","role"],updateUser)
+      return updateUser
+    }
+
+    throw new APIERROR(403, "ليس لديك الصلاحية لاتخاذ هذا الاجراء")
+
+}
+
+const validateUpdatePasswordInput=(currPassword,newPassword)=>{
+
+  if(!currPassword || !newPassword){
+    throw new APIERROR(400, "يرجى إدخال كلمة المرور الحالية و كلمة المرور الجديدة")
+  }
+
+}
+
+const getUserById=async(id)=>{
+
+  const user=await userModel.findById(id)
+  if(!user){
+    throw new APIERROR(404, "المستخدم غير موجود")
+  }
+  return user
+}
+
+const comparePassword= async(currPassword,userPassword)=>{
+
+  const passwordValid = await bcryptjs.compare(currPassword, userPassword);
+  if (!passwordValid) throw new APIERROR(400, "كلمة المرور الحالية أو كلمة المرور الجديدة غير صحيحة");
+  
+}
+
+
+module.exports = { validateLoginInput, checkUserAndPassword, generateToken , checkValidityRole,checkEqualtyIDAndRoleForUpdate,validateUpdatePasswordInput,getUserById,comparePassword};

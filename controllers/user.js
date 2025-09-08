@@ -102,9 +102,11 @@ const login = async (req, res, next) => {
 
 const updateUserById = async (req, res , next) => {
     try {
+       const updateUser = userFunctions.checkEqualtyIDAndRoleForUpdate(req.id, req.params.id, req.role, req.body);
+    
         let user = await userModel.findByIdAndUpdate(
             req.params.id, 
-            req.body, 
+            updateUser, 
             { new: true, runValidators: true } 
         );
 
@@ -118,9 +120,30 @@ const updateUserById = async (req, res , next) => {
             data: user
         });
     } catch (error) {
-        next(new APIERROR(400, error.message));
+        next(new APIERROR(error.statusCode||400, error.message));
     }
 };
+
+const updatePassword= async (req, res , next)=>{
+
+  try{
+    var { currentPassword, newPassword } = req.body;
+
+    userFunctions.validateUpdatePasswordInput(currentPassword,newPassword);
+    
+    const user= await userFunctions.getUserById(req.id)
+    
+    await userFunctions.comparePassword(currentPassword,user.password)
+   
+    
+    user.password = newPassword;
+    await user.save();
+    res.status(200).json({status:"success",message:"تم تحديث كلمة المرور بنجاح"});
+    }catch(error){
+      next(new APIERROR(error.statusCode||400,error.message));
+    }
+
+}
 
 
 const deleteUserById = async (req, res , next) => {
@@ -147,5 +170,6 @@ module.exports = {
     createUser,
     updateUserById,
     deleteUserById,
-    login
+    login,
+    updatePassword
 };
