@@ -1,5 +1,6 @@
 const Job = require("../models/job");
 const APIERROR = require("../utils/apiError");
+const { getPagination } = require("../utils/generalFunction");
 
 const createJob = async (req, res, next) => {
     try {
@@ -18,23 +19,22 @@ const createJob = async (req, res, next) => {
 
 const getAllJobs = async (req, res, next) => {
     try {
-        const  query  = {...req.query};
-        const page = parseInt(query.page) || 1;
-        const limit = parseInt(query.limit) || 10;
-        const skip = (page - 1) * limit;
-        const jobs = await Job.find()
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
-        .lean()
-  ;
-        if (jobs.length === 0) {
-            return next(new APIERROR(404, "لا يوجد وظائف"));
-        }
+        const {limit, page, skip}=getPagination(req.query)
+
+        const[jobs,total]=await Promise.all([
+            Job.find().sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+            Job.countDocuments()
+          ])
+       
         res.status(200).json({
             status: "success",
             message: "تم الحصول على كل الوظائف بنجاح",
-            jobs,
+            data:jobs,
+            pagination: {
+                currentPage: page,
+                totalPages: Math.ceil(total / limit),
+                totalItems: total,
+              }
         });
     }
     catch (error) {
@@ -62,7 +62,7 @@ const getJobById = async (req, res, next) => {
 
 const updateJobById = async (req, res, next) => {
     try {
-        const job = await Job.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const job = await Job.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
         if (!job) {
             return next(new APIERROR(404, "الوظيفة غير موجودة"));
         }
