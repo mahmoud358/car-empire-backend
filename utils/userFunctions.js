@@ -29,6 +29,7 @@ function generateToken(user) {
       phoneNumber: user.phoneNumber,
       role: user.role,
       username: user.userName,
+      image:user.image?user.image:""
     },
     process.env.SECRET,
     // { expiresIn: "1d" }

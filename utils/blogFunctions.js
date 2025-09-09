@@ -36,7 +36,7 @@ async function getBlogByIdFn(id) {
 
 
 async function updateBlogByIdFn(id, data) {
-  const blog = await Blog.findByIdAndUpdate(id, data, { new: true });
+  const blog = await Blog.findByIdAndUpdate(id, data,{ new: true, runValidators: true });
   if (!blog) {
     throw new APIERROR(404, "المقال غير موجود");
   }

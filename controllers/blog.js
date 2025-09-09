@@ -7,6 +7,7 @@ const {
   deleteBlogByIdFn,
   getBlogByIdFn,
 } = require("../utils/blogFunctions");
+const { getPagination } = require("../utils/generalFunction");
 
 
 const createBlog = async (req, res, next) => {
@@ -62,7 +63,7 @@ const getBlogById = async (req, res, next) => {
 
 const updateBlogById = async (req, res, next) => {
   try {
-    const blog = await updateBlogByIdFn(req.params.id, req.body,{ new: true, runValidators: true });
+    const blog = await updateBlogByIdFn(req.params.id, req.body);
     res.status(200).json({
       status: "success",
       message: "تم تحديث المقال بنجاح",
