@@ -9,13 +9,13 @@ dotenv.config();
 
 console.log("DATABASE_URL:", process.env.DATABASE_URL);
 
-mongoose.connect(process.env.DATABASE_URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 5000, // 5 ثواني بدل 30
-})
-.then(() => console.log("✅ Connected to MongoDB"))
-.catch((err) => console.error("❌ DB Connection Error:", err));
+mongoose.connect(process.env.DATABASE_URL)
+  .then(() => console.log("✅ Connected to MongoDB"))
+  .catch((err) => {
+    console.error("❌ DB Connection Error:", err.message);
+    console.error(err);
+  });
+
 
 
 const app = express();
