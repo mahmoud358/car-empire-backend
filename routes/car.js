@@ -223,6 +223,8 @@ router.get("/",carControlls.getAllCar)
  * /car/add:
  *   post:
  *     summary: Add a new car
+ *     security:
+ *       - bearerAuth: []
  *     tags: [Cars]
  *     requestBody:
  *       required: true
@@ -262,6 +264,8 @@ router.get("/:id",carControlls.getCarByID)
  * /car/update/{id}:
  *   patch:
  *     summary: Update car by ID
+ *     security:
+ *       - bearerAuth: []
  *     tags: [Cars]
  *     parameters:
  *       - in: path
@@ -288,6 +292,8 @@ router.patch("/update/:id",auth,restrictTo(userRole.ADMIN,userRole.SUPERVISOR),c
  * /car/delete/{id}:
  *   delete:
  *     summary: Delete car by ID
+ *     security:
+ *       - bearerAuth: []
  *     tags: [Cars]
  *     parameters:
  *       - in: path

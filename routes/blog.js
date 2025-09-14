@@ -100,6 +100,8 @@ router.get("/:id", getBlogById);
  * /blog/{id}:
  *   put:
  *     summary: Update blog post by ID
+ *     security:
+ *       - bearerAuth: []
  *     tags: [Blogs]
  *     parameters:
  *       - in: path
@@ -126,6 +128,8 @@ router.put("/:id",auth, restrictTo(userRole.ADMIN), updateBlogById);
  * /blog/{id}:
  *   delete:
  *     summary: Delete blog post by ID
+ *     security:
+ *       - bearerAuth: []
  *     tags: [Blogs]
  *     parameters:
  *       - in: path

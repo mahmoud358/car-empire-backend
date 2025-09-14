@@ -38,6 +38,8 @@ const router=express.Router()
  *   get:
  *     summary: Get all suppliers
  *     tags: [Suppliers]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: List of all suppliers
@@ -62,6 +64,8 @@ router.get("/",auth,restrictTo(userRole.ADMIN,userRole.SUPERVISOR),supplierContr
  *   post:
  *     summary: Add a new supplier
  *     tags: [Suppliers]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -81,6 +85,8 @@ router.post("/add",auth,restrictTo(userRole.ADMIN,userRole.SUPERVISOR),supplierC
  *   get:
  *     summary: Get supplier by ID
  *     tags: [Suppliers]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -101,6 +107,8 @@ router.get("/:id",auth,restrictTo(userRole.ADMIN,userRole.SUPERVISOR),supplierCo
  *   patch:
  *     summary: Update supplier by ID
  *     tags: [Suppliers]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -127,6 +135,8 @@ router.patch("/update/:id",auth,restrictTo(userRole.ADMIN,userRole.SUPERVISOR),s
  *   delete:
  *     summary: Delete supplier by ID
  *     tags: [Suppliers]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
