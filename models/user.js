@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const bcryptjs = require("bcryptjs");
-
+const crypto = require("crypto");
 let users = mongoose.Schema(
   {
     name: {
@@ -23,6 +23,7 @@ let users = mongoose.Schema(
       type: String,
       match: [/^[a-zA-Z0-9._%+-]+@(gmail\.com|outlook\.com)$/, "الايميل غير صالح"],
       unique: [true,"الايميل مستخدم من قبل"],
+      required: [true, "الايميل مطلوب"],
     },
     phoneNumber: {
       type: String,
@@ -55,6 +56,14 @@ let users = mongoose.Schema(
         message:"الدور يجب ان يكون من بين القيم المسموحة"
       },
     }, 
+    passwordResetToken: {
+      type: String,
+      default: null,
+    },
+    passwordResetExpires: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true }
 );
@@ -66,5 +75,16 @@ users.pre("save", async function (next) {
   }
   next();
 });
+
+users.methods.createResetPasswordToken = function () {
+  const resetToken = crypto.randomBytes(32).toString('hex');
+
+  this.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+  this.passwordResetExpires = Date.now() + 20 * 60 * 1000;
+
+  console.log(resetToken, this.passwordResetToken);
+
+  return resetToken;
+};
 const userModel = mongoose.model("User", users);
 module.exports = userModel;

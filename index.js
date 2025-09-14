@@ -51,7 +51,10 @@ app.use("/supplier", supplierRouter);
 const carRouter = require("./routes/car");
 app.use("/car", carRouter);
 
-
+const loginLogRoutes = require("./routes/loginLog");
+app.use("/login-log", loginLogRoutes);
+const opinionRoutes = require("./routes/Opinions");
+app.use("/opinion", opinionRoutes);
 
 // ✅ 404 Handler (Catch-all)
 app.use((req, res, next) => {
