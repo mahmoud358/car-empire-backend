@@ -13,7 +13,7 @@ const addCar = async (req, res,next)=>{
       
      await Promise.all([
         newCar.save({ session }),
-        carFunctions.addCarToSupplier(newCar._id,req.body.suppliers,session)
+        carFunctions.addCarToSupplier(newCar,req.body.suppliers,session)
        ]) 
        return newCar;
       });
@@ -64,45 +64,66 @@ const getCarByID = async (req, res,next)=>{
 }
 
 
+
+
+
+
 const updateCar = async (req, res, next) => {
   try {
-   
-
-    const car=await withTransaction(async (session) => {
+    const car = await withTransaction(async (session) => {
       const updatedCar = req.body;
-      const car = await carFunctions.getCarByID(req.params.id, session);
 
-      // استخراج الموردين اللي يتضافوا/يتشالوا
-      const { addSuppliers, deleteSuppliers } =
-        carFunctions.getUpdatedSuppliers(car.suppliers, updatedCar.suppliers);
+      // car قبل التعديل
+      const carDoc = await carFunctions.getCarByID(req.params.id, session);
+      const carBeforePlain = carDoc.toObject();
 
-      // تحديث باقي الحقول
-      carFunctions.updateCarFields(car, updatedCar);
+      // الموردين الجداد واللي يتمسحوا
+      const { addSuppliers, deleteSuppliers, remainSuppliers } =
+        carFunctions.getUpdatedSuppliers(carDoc.suppliers, updatedCar.suppliers);
 
-      // حفظ السيارة والموردين
-      const ops = [car.save({ session })];
-          if (addSuppliers.length>0) {
-            ops.push(carFunctions.addCarToSupplier(car._id, addSuppliers, session));
-          }
-          if (deleteSuppliers.length>0) {
-            ops.push(
-              carFunctions.deleteCarFromSupplier(car._id, deleteSuppliers, session)
-            );
-          }
-      
-          // تنفيذ كل العمليات مع بعض
-          await Promise.all(ops);
+      // نحدث باقي الحقول
+      carFunctions.updateCarFields(carDoc, updatedCar);
 
-     return car
+      // مقارنة قبل وبعد التعديل
+      const isDifferent = carFunctions.compareCarAfterAndBeforEdite(
+        carBeforePlain,
+        carDoc,
+        addSuppliers,
+        remainSuppliers
+      );
+
+      const ops = [carDoc.save({ session })];
+
+      // ✅ 1. إضافة الموردين الجداد بالبيانات الجديدة
+      if (addSuppliers.length > 0) {
+        ops.push(carFunctions.addCarToSupplier(carDoc, addSuppliers, session));
+      }
+
+      // ✅ 2. حذف الموردين
+      if (deleteSuppliers.length > 0) {
+        ops.push(
+          carFunctions.deleteCarFromSupplier(carDoc, deleteSuppliers, session)
+        );
+      }
+
+      // ✅ 3. تحديث الموردين الباقيين لو فيه اختلاف
+      if (isDifferent) {
+        ops.push(
+          carFunctions.updateCarInSuppliers(carDoc, remainSuppliers, session)
+        );
+      }
+
+      await Promise.all(ops);
+      return carDoc;
     });
 
     res.status(200).json({
       status: "success",
       message: "تم تحديث السيارة بنجاح",
-      data: car
+      data: car,
     });
   } catch (error) {
-    next(new APIERROR(error.statusCode||400, error.message));
+    next(new APIERROR(error.statusCode || 400, error.message));
   }
 };
 
@@ -113,7 +134,7 @@ const deleteCar = async (req, res, next) => {
 
       await Promise.all([
         Car.deleteOne({ _id: car._id }, { session }),
-        carFunctions.deleteCarFromSupplier(car._id, car.suppliers, session),
+        carFunctions.deleteCarFromSupplier(car, car.suppliers, session),
       ]);
     });
 

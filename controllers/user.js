@@ -45,7 +45,7 @@ const getUserById = async (req, res, next) => {
         return next(new APIERROR(400, "معرّف المستخدم غير صالح"));
       }
   
-      let user = await userModel.findById(id);
+      let user = await userModel.findById(id).select("-password");
   
       if (!user) {
         return next(new APIERROR(404, "المستخدم غير موجود"));

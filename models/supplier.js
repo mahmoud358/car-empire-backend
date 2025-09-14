@@ -18,7 +18,16 @@ const supplierSchema = new mongoose.Schema({
     type: String,
     required: [ true,"جهات التمويل مطلوبة"]
   }],
-  cars: [{ type: mongoose.Schema.Types.ObjectId, ref: "Car" }]
+  cars: [{
+    carID: {
+      type: mongoose.Schema.Types.ObjectId, 
+      ref: "Car",
+      required: true
+    },
+    brand: { type: String, index: true },   // searchable
+    model: { type: String, index: true },   // searchable
+    category: { type: String, index: true } // searchable
+  }]
 });
 
 module.exports = mongoose.model("Supplier", supplierSchema);

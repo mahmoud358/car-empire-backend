@@ -7,7 +7,6 @@ const swaggerSpec = require('./swagger.js');
 
 dotenv.config();
 
-console.log("DATABASE_URL:", process.env.DATABASE_URL);
 
 mongoose.connect(process.env.DATABASE_URL)
   .then(() => console.log("✅ Connected to MongoDB"))
@@ -50,6 +49,9 @@ const supplierRouter = require("./routes/supplier");
 app.use("/supplier", supplierRouter);
 const carRouter = require("./routes/car");
 app.use("/car", carRouter);
+const reqBuyingRouter = require("./routes/requestBuying");
+app.use("/request-buying", reqBuyingRouter);
+
 
 
 

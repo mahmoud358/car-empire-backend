@@ -1,6 +1,6 @@
 const express = require("express");
 const carControlls= require("../controllers/car")
-// const { auth,restrictTo } = require("../middlewares/auth");
+const { auth,restrictTo } = require("../middlewares/auth");
 const userRole = require("../utils/user-roles");
 const router=express.Router()
 
@@ -156,10 +156,50 @@ const router=express.Router()
  *           type: integer
  *         description: Page number
  *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
  *         name: limit
  *         schema:
  *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 10
  *         description: Number of items per page
+ *       - in: query
+ *         name: minPrice
+ *         schema:
+ *           type: number
+ *         description: Minimum price
+ *       - in: query
+ *         name: maxPrice
+ *         schema:
+ *           type: number
+ *         description: Maximum price
+ *       - in: query
+ *         name: minYear
+ *         schema:
+ *           type: number
+ *         description: Minimum year
+ *       - in: query
+ *         name: maxYear
+ *         schema:
+ *           type: number
+ *         description: Maximum year
+ *       - in: query
+ *         name: brand
+ *         schema:
+ *           type: string
+ *         description: Filter by brand
+ *       - in: query
+ *         name: model
+ *         schema:
+ *           type: string
+ *         description: Filter by model
  *     responses:
  *       200:
  *         description: List of cars
@@ -196,7 +236,7 @@ router.get("/",carControlls.getAllCar)
  *       400:
  *         description: Invalid input
  */
-router.post("/add",carControlls.addCar)
+router.post("/add",auth,restrictTo(userRole.ADMIN,userRole.SUPERVISOR),carControlls.addCar)
 /**
  * @swagger
  * /car/{id}:
@@ -242,7 +282,7 @@ router.get("/:id",carControlls.getCarByID)
  *       404:
  *         description: Car not found
  */
-router.patch("/update/:id",carControlls.updateCar)
+router.patch("/update/:id",auth,restrictTo(userRole.ADMIN,userRole.SUPERVISOR),carControlls.updateCar)
 /**
  * @swagger
  * /car/delete/{id}:
@@ -262,6 +302,6 @@ router.patch("/update/:id",carControlls.updateCar)
  *       404:
  *         description: Car not found
  */
-router.delete("/delete/:id",carControlls.deleteCar)
+router.delete("/delete/:id",auth,restrictTo(userRole.ADMIN,userRole.SUPERVISOR),carControlls.deleteCar)
 
 module.exports=router

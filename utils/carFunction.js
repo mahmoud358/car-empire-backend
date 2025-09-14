@@ -3,11 +3,19 @@ const Supplier = require("../models/supplier");
 const APIERROR = require("./apiError");
 
 
-const addCarToSupplier = async (carID, suppliersID, session) => {
-   
+const addCarToSupplier = async (car, suppliersID, session) => {
+
+
+   const carObjthatAddTosupplier={
+    carID: car._id,
+          brand:  car.specifications.brand?.en ,
+          model:  car.specifications.model?.en ,
+          category:  car.specifications.category?.en ,
+   }
+
       const suppliers = await Supplier.updateMany(
         { _id: { $in: suppliersID } },
-        { $addToSet: { cars: carID } },
+        { $addToSet: { cars: carObjthatAddTosupplier } },
         { session }
       );
       
@@ -18,17 +26,60 @@ const addCarToSupplier = async (carID, suppliersID, session) => {
     
   };
   
-  const deleteCarFromSupplier = async (carID, suppliersID, session) => {
+  const deleteCarFromSupplier = async (car, suppliersID, session) => {
+
     const suppliers = await Supplier.updateMany(
       { _id: { $in: suppliersID } },
-      { $pull: { cars: carID } },
+      { $pull: { cars: { carID: car._id } } }, // ✅ حذف بالـ carID فقط
       { session }
     );
+    
     if (suppliers.matchedCount === 0) {
       throw new APIERROR(404, "المورد غير موجود");
     }
     return suppliers;
   };
+
+  const compareCarAfterAndBeforEdite = (carBefore, carAfter,addSuppliers,remainSuppliers) => {
+
+    const oldSpec = carBefore.specifications;
+    const newSpec = carAfter.specifications;
+  
+    // نشوف لو فيه اختلاف
+    const changed =
+      oldSpec.brand?.en !== newSpec.brand?.en ||
+      oldSpec.model?.en !== newSpec.model?.en ||
+      oldSpec.category?.en !== newSpec.category?.en;
+  
+    // لو مفيش اختلاف أو فيه موردين جداد → منعملش Update
+    if (!changed || (addSuppliers.length > 0 && remainSuppliers.length===0)) {
+      return false;
+    }else{
+      return true;
+    }
+    
+  }
+  // ✅ تحديث بيانات العربية داخل الموردين بس لو فيه تغيير ومفيش إضافة جديدة
+
+const updateCarInSuppliers = async (updateCar, suppliersID, session) => {
+  console.log("session in updateCarInSuppliers:", session?.constructor?.name);
+
+  // نفلتر بالموردين اللي لسه موجودين
+  const result = await Supplier.updateMany(
+    { _id: { $in: suppliersID }, "cars.carID": updateCar._id },
+    {
+      $set: {
+        "cars.$.brand": updateCar.specifications.brand?.en,
+        "cars.$.model": updateCar.specifications.model?.en,
+        "cars.$.category": updateCar.specifications.category?.en,
+      },
+    },
+    { session }
+  );
+
+  return result; // ✅ Promise واحدة
+};
+
   
 // ✅ استخراج الموردين اللي هيتضافوا أو يتمسحوا بكفاءة أعلى
 const getUpdatedSuppliers = (currentSuppliers, updatedSupplierIds) => {
@@ -40,8 +91,19 @@ const getUpdatedSuppliers = (currentSuppliers, updatedSupplierIds) => {
   
     const deleteSuppliers = [...currentSet]
       .filter(id => !updatedSet.has(id))
+
+      const remainSuppliers = [...currentSet]
+     .filter(id => updatedSet.has(id));
+
+    console.log("addSuppliers");
+    console.log(addSuppliers);
+    console.log("deleteSuppliers");
+    console.log(deleteSuppliers);
+    console.log("remainSuppliers");
+    console.log(remainSuppliers);
+
   
-    return { addSuppliers, deleteSuppliers };
+    return { addSuppliers, deleteSuppliers,remainSuppliers };
   };
    
   // 3️⃣ تحديث باقي الحقول
@@ -50,7 +112,17 @@ const getUpdatedSuppliers = (currentSuppliers, updatedSupplierIds) => {
     
     for (const key in updatedCar) {
       if (updatedCar.hasOwnProperty(key) ) {
-        car[key] = updatedCar[key];
+        if(key==="specifications"){
+          for (const key2 in updatedCar[key]) {
+
+            if (updatedCar[key].hasOwnProperty(key2)) {
+              car[key][key2] = updatedCar[key][key2];
+            }
+          }
+        }else{
+          car[key] = updatedCar[key];
+        }
+        
       }
     }
     return car;
@@ -93,6 +165,7 @@ const getfilterObj= (query)=>{
 }
 
 const getCarByID = async (id, session) => {
+
   const car = await Car.findById(id).session(session);
   if (!car) {
     throw new APIERROR(404, "السيارة غير موجودة");
@@ -100,4 +173,4 @@ const getCarByID = async (id, session) => {
   return car;
 };
 
-module.exports={addCarToSupplier,getfilterObj,getCarByID,deleteCarFromSupplier,getUpdatedSuppliers,updateCarFields}
+module.exports={addCarToSupplier,getfilterObj,getCarByID,deleteCarFromSupplier,getUpdatedSuppliers,updateCarFields,updateCarInSuppliers,compareCarAfterAndBeforEdite}

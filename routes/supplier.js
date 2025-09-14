@@ -1,6 +1,6 @@
 const express = require("express");
 const supplierControlls= require("../controllers/supplier")
-// const { auth,restrictTo } = require("../middlewares/auth");
+const { auth,restrictTo } = require("../middlewares/auth");
 const userRole = require("../utils/user-roles");
 const router=express.Router()
 
@@ -55,7 +55,7 @@ const router=express.Router()
  *                   items:
  *                     $ref: '#/components/schemas/Supplier'
  */
-router.get("/",supplierControlls.getAllSupplier)
+router.get("/",auth,restrictTo(userRole.ADMIN,userRole.SUPERVISOR),supplierControlls.getAllSupplier)
 /**
  * @swagger
  * /supplier/add:
@@ -74,7 +74,7 @@ router.get("/",supplierControlls.getAllSupplier)
  *       400:
  *         description: Invalid input
  */
-router.post("/add",supplierControlls.addSupplier)
+router.post("/add",auth,restrictTo(userRole.ADMIN,userRole.SUPERVISOR),supplierControlls.addSupplier)
 /**
  * @swagger
  * /supplier/{id}:
@@ -94,7 +94,7 @@ router.post("/add",supplierControlls.addSupplier)
  *       404:
  *         description: Supplier not found
  */
-router.get("/:id",supplierControlls.getSupplierByID)
+router.get("/:id",auth,restrictTo(userRole.ADMIN,userRole.SUPERVISOR),supplierControlls.getSupplierByID)
 /**
  * @swagger
  * /supplier/update/{id}:
@@ -120,7 +120,7 @@ router.get("/:id",supplierControlls.getSupplierByID)
  *       404:
  *         description: Supplier not found
  */
-router.patch("/update/:id",supplierControlls.updateSupplier)
+router.patch("/update/:id",auth,restrictTo(userRole.ADMIN,userRole.SUPERVISOR),supplierControlls.updateSupplier)
 /**
  * @swagger
  * /supplier/delete/{id}:
@@ -140,7 +140,7 @@ router.patch("/update/:id",supplierControlls.updateSupplier)
  *       404:
  *         description: Supplier not found
  */
-router.delete("/delete/:id",supplierControlls.deleteSupplier)
+router.delete("/delete/:id",auth,restrictTo(userRole.ADMIN,userRole.SUPERVISOR),supplierControlls.deleteSupplier)
 
 module.exports=router
 
