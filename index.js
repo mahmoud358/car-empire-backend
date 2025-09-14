@@ -53,7 +53,10 @@ const reqBuyingRouter = require("./routes/requestBuying");
 app.use("/request-buying", reqBuyingRouter);
 
 
-
+const loginLogRoutes = require("./routes/loginLog");
+app.use("/login-log", loginLogRoutes);
+const opinionRoutes = require("./routes/Opinions");
+app.use("/opinion", opinionRoutes);
 
 // ✅ 404 Handler (Catch-all)
 app.use((req, res, next) => {

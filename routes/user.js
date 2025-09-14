@@ -9,7 +9,9 @@ const {
   updateUserById,
   deleteUserById,
   login,
-  updatePassword
+  updatePassword,
+  forgotPassword,
+  resetPassword
 } = require("../controllers/user");
 
 /**
@@ -265,4 +267,6 @@ router.post("/login", login);
 */
 router.put("/update/password",auth, restrictTo(userRole.ADMIN, userRole.SUPERVISOR,userRole.EMPLOYEE), updatePassword);
 
+router.post("/forgotPassword", forgotPassword);
+router.patch("/resetPassword/:token", resetPassword);
 module.exports = router;
