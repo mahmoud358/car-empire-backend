@@ -267,6 +267,67 @@ router.post("/login", login);
 */
 router.put("/update/password",auth, restrictTo(userRole.ADMIN, userRole.SUPERVISOR,userRole.EMPLOYEE), updatePassword);
 
+/**
+* @swagger
+* /user/forgotPassword:
+*   post:
+*     summary: Forgot password
+*     tags: [Users]
+*     requestBody:
+*       required: true
+*       content:
+*         application/json:
+*           schema:
+*             type: object
+*             required:
+*               - email
+*             properties:
+*               email:
+*                 type: string
+*     responses:
+*       200:
+*         description: Password reset email sent successfully
+*       404:
+*         description: User not found
+*       500:
+*         description: server error 
+*/
 router.post("/forgotPassword", forgotPassword);
+
+/**
+* @swagger
+* /user/resetPassword/{token}:
+*   patch:
+*     summary: Forgot password
+*     tags: [Users]
+*     parameters:
+*       - in: path
+*         name: token
+*         required: true
+*         schema:
+*           type: string
+*         description: resetPassword token
+*     requestBody:
+*       required: true
+*       content:
+*         application/json:
+*           schema:
+*             type: object
+*             required:
+*               - password
+*               - confirmPassword
+*             properties:
+*               password:
+*                 type: string
+*               confirmPassword:
+*                 type: string
+*     responses:
+*       200:
+*         description: password updated successfully
+*       400:
+*         description: Invalid input
+*       500:
+*         description: server error
+*/
 router.patch("/resetPassword/:token", resetPassword);
 module.exports = router;

@@ -172,9 +172,9 @@ const forgotPassword= async(req,res, next)=>{
   if (!user) return next(new APIERROR(404, "User not found"));
   
     const resetToken = user.createResetPasswordToken();
-    console.log("Before saving user:", user);
+   
     await user.save();
-    console.log("After saving user:", user);
+   
 
     const resetUrl = `http://localhost:8000/user/resetPassword/${resetToken}`;   
 
@@ -193,12 +193,12 @@ const forgotPassword= async(req,res, next)=>{
           subject : 'Password Reset Request',
           html:message
         })
-        return res.status(200).json({ message: "Email sent successfully" });
+        return res.status(200).json({status:"success", message: "تم إرسال البريد الإلكتروني بنجاح" });
     }catch(err){
       user.passwordResetToken = undefined,
       user.passwordResetExpires = undefined
      await  user.save();
-      return next(new APIERROR(500, "There was an error sending the email. Try again later."));
+      return next(new APIERROR(500, "حدث خطأ أثناء إرسال البريد الإلكتروني. حاول مرة أخرى لاحقًا."));
     }
       }
 
@@ -216,7 +216,7 @@ const forgotPassword= async(req,res, next)=>{
       
       
               if (!user) {
-                  return next(new APIERROR(400, "Invalid or expired token"));
+                  return next(new APIERROR(400, "لقد انتهت صلاحية هذا اللينك"));
               }
       
       
@@ -224,7 +224,7 @@ const forgotPassword= async(req,res, next)=>{
       
       
               if (password !== confirmPassword) {
-                  return next(new APIERROR(400, "Passwords do not match"));
+                  return next(new APIERROR(400, "كلمات المرور غير متطابقة"));
               }
       
       
@@ -239,11 +239,11 @@ const forgotPassword= async(req,res, next)=>{
               await user.save();
       
       
-              return res.status(200).json({ message: "Password updated successfully" });
+              return res.status(200).json({status:"success", message: "تم اعادة تعيين كلمة المرور بنجاح" });
           } catch (error) {
       
-              console.error("Error resetting password:", error);
-              next(new APIERROR(500, "An error occurred while resetting the password"));
+              
+              next(new APIERROR(500, "حدث خطأ أثناء إعادة تعيين كلمة المرور"));
           }
       };
 
