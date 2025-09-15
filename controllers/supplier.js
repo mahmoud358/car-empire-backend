@@ -1,5 +1,13 @@
 const Supplier = require("../models/supplier");
 const APIERROR = require("../utils/apiError");
+const supplierFun = require("../utils/supplierFun");
+
+
+const withTransaction = require("../utils/withTransaction");
+
+
+
+
 
 
 const addSupplier = async (req, res,next) => {
@@ -54,11 +62,16 @@ const updateSupplier = async(req, res,next)=>{
 
 const deleteSupplier = async (req, res,next)=>{
   try{
-    const supplier= await Supplier.findByIdAndDelete(req.params.id);
-
-    if(!supplier){
-      return next(new APIERROR(404,"المورد غير موجود"))
-    } 
+     await withTransaction(async (session) => {
+      const [supplier] = await Promise.all([
+       Supplier.findByIdAndDelete(req.params.id,{session}),
+       supplierFun.deleteSupplierFromCar(req.params.id,session)
+      ])
+      if(!supplier){
+        return next(new APIERROR(404,"المورد غير موجود"))
+      }
+     })
+   
     res.status(200).json({status:"success",message:"تم حذف المورد"})
   }catch (error){
     next(new APIERROR(400,error.message))
