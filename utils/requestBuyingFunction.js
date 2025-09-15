@@ -98,7 +98,7 @@ const getSuppliersWhoHaveRequestCar = async (car) => {
   const suppliers= await Supplier.find({
         "cars.brand": car.brand,
         "cars.model": car.model,
-        "cars.category": car.category,
+        // "cars.category": car.category,
   }).select("name funding");
 
   

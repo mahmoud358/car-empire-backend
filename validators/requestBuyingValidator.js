@@ -103,10 +103,10 @@ const baseSchema = {
             "any.required": "يجب إدخال نموذج السيارة",
             "string.pattern.base":"النص يجب أن يكون بالإنجليزية فقط مع السماح بالرموز والمسافات العادية"
         }),
-        category: Joi.string().required().pattern(carDettailsRegex).messages({
-            "any.required": "يجب إدخال فئة السيارة",
-            "string.pattern.base":"النص يجب أن يكون بالإنجليزية فقط مع السماح بالرموز والمسافات العادية"
-        }),
+        // category: Joi.string().required().pattern(carDettailsRegex).messages({
+        //     "any.required": "يجب إدخال فئة السيارة",
+        //     "string.pattern.base":"النص يجب أن يكون بالإنجليزية فقط مع السماح بالرموز والمسافات العادية"
+        // }),
     }).required().messages({
         "any.required": "يجب إدخال بيانات السيارة",
     }),
@@ -198,9 +198,9 @@ const baseSchema = {
             model: Joi.string().required().messages({
                 "any.required": "يجب إدخال نموذج السيارة",
             }),
-            category: Joi.string().required().messages({
-                "any.required": "يجب إدخال فئة السيارة",
-            }),
+            // category: Joi.string().required().messages({
+            //     "any.required": "يجب إدخال فئة السيارة",
+            // }),
         }).required().messages({
             "any.required": "يجب إدخال بيانات السيارة",
         }),

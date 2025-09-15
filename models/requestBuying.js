@@ -95,7 +95,7 @@ const requestBuyingSchema = new mongoose.Schema(
     car: {
       brand:makeLocalizedCarObj,
       model: makeLocalizedCarObj,
-      category: makeLocalizedCarObj,
+      // category: makeLocalizedCarObj,
     },
     // 🔹 ملفات مرفقة
 

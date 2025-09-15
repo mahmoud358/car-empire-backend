@@ -95,14 +95,6 @@ const getUpdatedSuppliers = (currentSuppliers, updatedSupplierIds) => {
       const remainSuppliers = [...currentSet]
      .filter(id => updatedSet.has(id));
 
-    console.log("addSuppliers");
-    console.log(addSuppliers);
-    console.log("deleteSuppliers");
-    console.log(deleteSuppliers);
-    console.log("remainSuppliers");
-    console.log(remainSuppliers);
-
-  
     return { addSuppliers, deleteSuppliers,remainSuppliers };
   };
    
