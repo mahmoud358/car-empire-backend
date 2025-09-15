@@ -40,9 +40,27 @@ const makeLocalizedStringAndEnum = (enumAr,enumEn,fieldName) => ({
     enum: enumEn,
   }
 })
-
+"اسم السيارة"
 const carSchema = new mongoose.Schema({
-  name: makeLocalizedString(true,"اسم السيارة"),
+  name:{
+    ar: {
+      type: String,
+      required:  [true, " اسم السيارة بالعربى مطلوب"],
+      trim: true,
+      minlength: [2, "اسم السيارة يجب ان يكون اكبر من حرفين"],
+      maxlength: [100, "اسم السيارة يجب الا يزيد عن 50 حرف"],
+      unique: [true, "اسم السيارة بالعربى مكرر"],
+    },
+    en: {
+      type: String,
+      required:  [true, "اسم السيارة بالانجليزية مطلوب"],
+      trim: true,
+      minlength: [2, "اسم السيارة يجب ان يكون اكبر من حرفين"],
+      maxlength: [100, "اسم السيارة يجب الا يزيد عن 50 حرف"],
+      unique: [true, "اسم السيارة بالانجليزية مكرر"],
+    },
+    
+  },
 
   status:makeLocalizedStringAndEnum(["جديدة","استعمال"],["new", "use"],"الحالة"),
 

@@ -261,6 +261,26 @@ router.post("/add",auth,restrictTo(userRole.ADMIN,userRole.SUPERVISOR),carContro
 router.get("/:id",carControlls.getCarByID)
 /**
  * @swagger
+ * /car/by-nameEn/{name}:
+ *   get:
+ *     summary: Get car by name
+ *     tags: [Cars]
+ *     parameters:
+ *       - in: path
+ *         name: name
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Car name
+ *     responses:
+ *       200:
+ *         description: Car details
+ *       404:
+ *         description: Car not found
+ */
+router.get("/by-nameEn/:name",carControlls.getCarByName)
+/**
+ * @swagger
  * /car/update/{id}:
  *   patch:
  *     summary: Update car by ID

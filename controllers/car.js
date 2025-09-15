@@ -62,8 +62,19 @@ const getCarByID = async (req, res,next)=>{
 
 }
 
+const getCarByName = async (req, res,next)=>{
+  try{
+  
 
+    const car= await Car.findOne({"name.en":req.params.name.trim()});
+    if(!car) return next(new APIERROR(404,"لا يوجد سيارة بهذا الاسم"))
 
+    res.status(200).json({status:"success",message:"تم عرض السيارة بنجاح",data:car})
+  }catch (error){
+    next(new APIERROR(error.statusCode||400,error.message))
+  }
+  
+}
 
 
 
@@ -146,4 +157,4 @@ const deleteCar = async (req, res, next) => {
   }
 };
 
-module.exports={addCar,getAllCar,getCarByID,updateCar,deleteCar}
+module.exports={addCar,getAllCar,getCarByID,updateCar,deleteCar,getCarByName}
