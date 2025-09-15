@@ -30,7 +30,6 @@ const getAllCar=  async (req, res,next)=>{
     try{
       const{limit, page, skip}=getPagination(req.query);
     const filterObj= carFunctions.getfilterObj(req.query);
-    console.log(filterObj);
     
       const [cars,total]= await Promise.all([
         Car.find(filterObj).skip(skip).limit(limit),

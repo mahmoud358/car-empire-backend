@@ -160,6 +160,9 @@ const getfilterObj= (query)=>{
     if(query.model){
         filterObj["specifications.model.en"]=query.model;
     }
+    if(query.showInHome){
+      filterObj.showInHome=query.showInHome;
+    }
 
     return filterObj;
 }

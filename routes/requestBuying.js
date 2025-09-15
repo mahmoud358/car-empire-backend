@@ -463,7 +463,7 @@ const {validateRequest}=require("../middlewares/validateRequestBuying");
 
 /**
  * @swagger
- * /requestBuying/add:
+ * /request-buying/add:
  *   post:
  *     summary: Create a new buying request
  *     description: Create a new buying request with validation based on request type (corporate-finance, personal-finance, or cash)
@@ -568,7 +568,7 @@ router.post("/add",validateRequest, reqBuyong.createRequestBuying);
 
 /**
  * @swagger
- * /requestBuying/all/{type}:
+ * /request-buying/all/{type}:
  *   get:
  *     summary: Get all buying requests by type
  *     description: Retrieve all buying requests filtered by type with pagination and status statistics
@@ -680,7 +680,7 @@ router.get("/all/:type",auth,restrictTo(userRole.ADMIN,userRole.SUPERVISOR,userR
 
 /**
  * @swagger
- * /requestBuying/{id}:
+ * /request-buying/{id}:
  *   get:
  *     summary: Get buying request by ID
  *     description: Retrieve a specific buying request by its ID along with available suppliers
@@ -757,7 +757,7 @@ router.get("/:id",auth,restrictTo(userRole.ADMIN,userRole.SUPERVISOR,userRole.EM
 
 /**
  * @swagger
- * /requestBuying/{id}:
+ * /request-buying/{id}:
  *   patch:
  *     summary: Assign request to employee
  *     description: Assign a buying request to a specific employee and change status to processing
@@ -817,7 +817,7 @@ router.patch("/:id",auth,restrictTo(userRole.ADMIN,userRole.SUPERVISOR),reqBuyon
 
 /**
  * @swagger
- * /requestBuying/update/{id}:
+ * /request-buying/update/{id}:
  *   patch:
  *     summary: Update buying request
  *     description: Update a buying request with validation based on user role and request status
