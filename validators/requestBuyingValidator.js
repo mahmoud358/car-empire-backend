@@ -110,21 +110,21 @@ const baseSchema = {
     }).required().messages({
         "any.required": "يجب إدخال بيانات السيارة",
     }),
-    idCard: Joi.string().pattern(imageRegex).required().messages({
+    idCard: Joi.string().pattern(imageRegex).messages({
         "string.pattern.base": "رابط صورة الهوية غير صالح",
-        "any.required": "رابط صورة الهوية مطلوب",
+        // "any.required": "رابط صورة الهوية مطلوب",
     }),
     drivingLicense: Joi.string()
-        .pattern(imageRegex).required()
+        .pattern(imageRegex)
         .messages({
             "string.pattern.base": "رابط رخصة القيادة غير صالح",
-            "any.required": "رابط رخصة القيادة مطلوب",
+            // "any.required": "رابط رخصة القيادة مطلوب",
         }),
     salaryStatement: Joi.string()
-        .pattern(imageRegex).required()
+        .pattern(imageRegex)
         .messages({
             "string.pattern.base": "رابط بيان الراتب غير صالح",
-            "any.required": "رابط بيان الراتب مطلوب",
+            // "any.required": "رابط بيان الراتب مطلوب",
         }),
     personalData: Joi.object({
         salary: Joi.number().min(1000).required().messages({

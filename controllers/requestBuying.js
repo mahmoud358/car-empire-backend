@@ -21,7 +21,7 @@ const reqBuyingFunctions=require("../utils/requestBuyingFunction")
       const {limit,page,skip}=getPagination(req.query);
       const filterObj= reqBuyingFunctions.getfilterObj(req.query,req.params.type) ;
 
-      const ops=[RequestBuying.find({ ...filterObj}).skip(skip).limit(limit),
+      const ops=[RequestBuying.find({ ...filterObj}).skip(skip).limit(limit).sort({createdAt:-1}),
       RequestBuying.countDocuments({...filterObj}),
       ]
 
