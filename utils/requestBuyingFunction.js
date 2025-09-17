@@ -93,17 +93,18 @@ const updateReqBuyingFields = (reqBuying, updatedreqBuying) => {
     return filterObj;
 }
 
-const getSuppliersWhoHaveRequestCar = async (car) => {
+// const getSuppliersWhoHaveRequestCar = async (car) => {
   
-  const suppliers= await Supplier.find({
-        "cars.brand": car.brand,
-        "cars.model": car.model,
-        // "cars.category": car.category,
-  }).select("name funding");
+//   const [suppliers,total]= await promis
+//   Supplier.find({
+//         "cars.brand": car.brand,
+//         "cars.model": car.model,
+//         // "cars.category": car.category,
+//   }).select("name funding").limit(10);
 
   
-  return suppliers;
-};
+//   return suppliers;
+// };
 
 const addTransactionToRequest= async (requestID,transType,transAmount,session)=>{
 
@@ -133,6 +134,6 @@ module.exports={
     checkValidityForUpdate,
     updateReqBuyingFields,
     getfilterObj,
-    getSuppliersWhoHaveRequestCar,
+    // getSuppliersWhoHaveRequestCar,
     addTransactionToRequest
 }

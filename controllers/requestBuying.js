@@ -1,7 +1,10 @@
 const RequestBuying = require("../models/requestBuying");
 const APIERROR = require("../utils/apiError") ;
 const { getPagination } = require("../utils/generalFunction");
-const reqBuyingFunctions=require("../utils/requestBuyingFunction")
+const reqBuyingFunctions=require("../utils/requestBuyingFunction");
+const { getSuppliersWhoHaveRequestCar } = require("../utils/supplierFun");
+const { getTransactionsByTypeAndRequestID } = require("../utils/transactionsFunction");
+
 
 
  const createRequestBuying=async(req, res, next)=>{
@@ -59,15 +62,21 @@ const reqBuyingFunctions=require("../utils/requestBuyingFunction")
 const getRequestBuyingByID= async (req, res, next)=>{
 
   try{
-    const request = await reqBuyingFunctions.getRequestBuyingByID(req.params.id);
 
-    const suppliers= await reqBuyingFunctions.getSuppliersWhoHaveRequestCar(request.car)
-    
+    const {id}=req.params
+    const request = await reqBuyingFunctions.getRequestBuyingByID(id);
 
+    const [suppliersData,expensesData,incomesData]= await Promise.all([
+      getSuppliersWhoHaveRequestCar(request.car),
+      getTransactionsByTypeAndRequestID("expense",id),
+      getTransactionsByTypeAndRequestID("income",id),
+    ])
     res.status(200).json({ status: "success", message: "تم جلب الطلب بنجاح", 
       data: {
         request,
-        suppliers
+        suppliersData,
+        expensesData,
+        incomesData
       } });
 
 

@@ -42,18 +42,16 @@ const getAllTransactions=async (req, res, next)=>{
     try{
         const {type,requestID}=req.params
         const {limit,page,skip}=getPagination(req.query);
-        const [transactions,total]= await Promise.all([
-            Transaction.find({type,requestID}).skip(skip).limit(limit).sort({createdAt:-1}),
-            transFun.getNumOfTransByTypeAndRequestID(type,requestID)
-        ])
+        const {transactions,totalItems,totalPages}= await transFun.getTransactionsByTypeAndRequestID(type,requestID,skip,limit)
+    
          
 
         res.status(201).json({ status: "success",message: "تم جلب المعاملات بنجاح  ",
             data:transactions,
             pagination: {
                 currentPage: page,
-                totalPages: Math.ceil(total / limit),
-                totalItems: total,
+                totalPages,
+                totalItems,
               }
         });
 
