@@ -58,6 +58,9 @@ app.use("/login-log", loginLogRoutes);
 const opinionRoutes = require("./routes/Opinions");
 app.use("/opinion", opinionRoutes);
 
+const transactionRouter=require("./routes/transactions");
+app.use("/transaction", transactionRouter);
+
 // ✅ 404 Handler (Catch-all)
 app.use((req, res, next) => {
   res.status(404).json({

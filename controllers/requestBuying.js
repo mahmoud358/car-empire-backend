@@ -99,7 +99,7 @@ const updateRequestBuying=async(req, res, next)=>{
     const request = await reqBuyingFunctions.getRequestBuyingByID(req.params.id);
    
     
-    reqBuyingFunctions.checkValidityForUpdate(req.role,req.id,request);
+    reqBuyingFunctions.checkValidityForUpdate(req.role,req.id,request.employeeId);
 
     reqBuyingFunctions.updateReqBuyingFields(request,req.body)
     

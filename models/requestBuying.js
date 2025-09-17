@@ -49,6 +49,16 @@ const requestBuyingSchema = new mongoose.Schema(
       type:String,
       // enum:['bank','cash','other'],
     },
+    totalIncomes:{
+      type:Number,
+      default:0,
+      min:[0," اجمالى الايرادات لا يمكن أن يكون سالب"]
+    },
+    totalExpenses:{
+      type:Number,
+      default:0,
+      min:[0," اجمالى المصروفات لا يمكن أن يكون سالب"]
+    },
     sellingPrice:{
       type:Number,
       min: [1000, "السعر يجب أن يكون أكبر من 1000"],
@@ -140,7 +150,6 @@ const requestBuyingSchema = new mongoose.Schema(
         type: Date,
         validate: {
           validator: function (date) {
-            console.log("date", date);
             
             return date <= new Date();
           },

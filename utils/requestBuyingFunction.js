@@ -2,22 +2,22 @@ const RequestBuying = require("../models/requestBuying");
 const Supplier = require("../models/supplier");
 const APIERROR = require("./apiError");
 
-const getRequestBuyingByID= async (id)=>{
+const getRequestBuyingByID= async (id,session)=>{
     try{
-        const request = await RequestBuying.findById(id);
+        const request = await RequestBuying.findById(id,{},{session});
         if (!request) {
             throw new APIERROR(404, "الطلب غير موجود");
         }
         return request
     }catch (error){
-        throw new APIERROR(400, "المورد غير موجود");
+        throw new APIERROR(400, error.message);
     }
 }
 
-const checkValidityForUpdate=(userRole,userID,request)=>{
+const checkValidityForUpdate=(userRole,userID,employeeId)=>{
     
-    if(userRole==="employee"&&userID!==request.employeeId?.toString()){
-        throw new APIERROR(403, "ليس لديك صلاحية تعديل هذا الطلب");
+    if(userRole==="employee"&&userID!==employeeId?.toString()){
+        throw new APIERROR(403, "ليس لديك صلاحية لاتخاذ هذا الاجراء");
 
     }
 
@@ -105,6 +105,25 @@ const getSuppliersWhoHaveRequestCar = async (car) => {
   return suppliers;
 };
 
+const addTransactionToRequest= async (requestID,transType,transAmount,session)=>{
+
+    let updateObj = {};
+
+  if (transType === "income") {
+    updateObj = { $inc: { totalIncomes: transAmount } };
+  } else if (transType === "expense") {
+    updateObj = { $inc: { totalExpenses: transAmount } };
+  }
+
+
+  const request = await RequestBuying.findByIdAndUpdate(
+    requestID,
+    updateObj,
+    { session, new: true } // new:true => يرجع الدوكيومنت بعد التحديث
+  );
+  
+
+}
   
   
   
@@ -114,5 +133,6 @@ module.exports={
     checkValidityForUpdate,
     updateReqBuyingFields,
     getfilterObj,
-    getSuppliersWhoHaveRequestCar
+    getSuppliersWhoHaveRequestCar,
+    addTransactionToRequest
 }
