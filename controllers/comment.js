@@ -58,4 +58,34 @@ const getCommentsByRequestID=async (req, res, next)=>{
 
 }
 
-module.exports = { addComment ,getCommentsByRequestID};
+const updateComment = async (req, res, next) => {
+  try {
+    const { commentId } = req.params;
+    const { text } = req.body;
+    const userId = req.id;
+    const comment = await Comment.findById(commentId);
+    if (!comment) {
+      return next(new APIERROR(404, "الكومنت غير موجود"));
+    }
+
+    if (
+      comment.userId.toString() !== userId 
+    ) {
+      return next(new APIERROR(403, "لا يمكنك تعديل هذا الكومنت"));
+    }
+
+    
+    comment.text = text || comment.text;
+    await comment.save();
+
+    res.status(200).json({
+      status: "success",
+      message: "تم تعديل الكومنت بنجاح",
+      data: comment,
+    });
+  } catch (error) {
+    next(new APIERROR(500, "حصل خطأ أثناء تعديل الكومنت"));
+  }
+};
+
+module.exports = { addComment ,getCommentsByRequestID, updateComment};
