@@ -566,6 +566,8 @@ const {validateRequest}=require("../middlewares/validateRequestBuying");
  */
 router.post("/add",validateRequest, reqBuyong.createRequestBuying);
 
+router.get("/phone/num/:phoneNumber",reqBuyong.getAllRequestBuyingByPhone);
+router.get("/numbers",auth,restrictTo(userRole.ADMIN,userRole.SUPERVISOR,userRole.EMPLOYEE),reqBuyong.getNumsOfTypeAndStatus);
 /**
  * @swagger
  * /request-buying/all/{type}:

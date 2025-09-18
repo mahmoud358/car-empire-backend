@@ -19,6 +19,75 @@ const { getTransactionsByTypeAndRequestID } = require("../utils/transactionsFunc
 
 }
 
+const getAllRequestBuyingByPhone=async(req, res, next)=>{
+    try {
+      const {limit,page,skip}=getPagination(req.query);
+     const result= await RequestBuying.aggregate([
+      {
+        $match: { phoneNumber: req.params.phoneNumber  }
+      },
+      { $sort: { createdAt: -1 } }, // الأحدث الأول
+      {
+        $facet: {
+          requests: [
+            { $skip: skip },
+            { $limit: limit },
+          ],
+          totalCount: [
+            { $count: "count" }
+          ]
+        }
+      }
+     ])
+
+     res.status(200).json({ status: "success", message: "تم جلب جميع الطلبات بنجاح", 
+      data: {
+        requests: result[0].requests||[],
+      },
+      pagination: {
+        currentPage: page,
+        totalPages: result[0].totalCount.length > 0 ? Math.ceil(result[0].totalCount[0].count / limit) : 0,
+        totalItems: result[0].totalCount.length > 0? result[0].totalCount[0].count : 0,
+      }
+       });
+
+    }catch(error){
+        next(new APIERROR(500, error.message));
+    }
+ 
+}
+
+const getNumsOfTypeAndStatus=async(req, res, next)=>{
+    try {
+       
+      const requestsNums= await RequestBuying.aggregate([
+        {
+          $facet:{
+            status:[
+              {
+                $group:{
+                  _id:"$status",
+                  count:{$sum:1}
+                }
+              }
+            ],
+            type:[
+              {
+                $group:{
+                  _id:"$type",
+                  count:{$sum:1}
+                }
+              }
+            ]
+          }
+        }
+
+      ])      
+        res.status(200).json({ status: "success", message: "تم جلب عدد الطلبات بنجاح", data: requestsNums });
+      } catch (error) {
+       next(new APIERROR(500, error.message));
+      }
+}
 
  const getAllRequestBuyingByType=async(req, res, next)=>{
     try {
@@ -129,5 +198,7 @@ module.exports={
     getAllRequestBuyingByType,
     getRequestBuyingByID,
     AssignRequestToEmployee,
-    updateRequestBuying
+    updateRequestBuying,
+    getNumsOfTypeAndStatus,
+    getAllRequestBuyingByPhone
 }
