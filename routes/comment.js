@@ -1,5 +1,5 @@
 const express = require("express");
-const { addComment, getCommentsByRequestID } = require("../controllers/comment");
+const { addComment, getCommentsByRequestID, updateComment } = require("../controllers/comment");
 const { auth,restrictTo } = require("../middlewares/auth");
 const userRole = require("../utils/user-roles");
 
@@ -155,5 +155,6 @@ router.post("/", auth,restrictTo(userRole.EMPLOYEE,userRole.ADMIN ,userRole.SUPE
  *         description: Internal server error
  */
 router.get("/:requestId", auth,restrictTo(userRole.EMPLOYEE,userRole.ADMIN ,userRole.SUPERVISOR), getCommentsByRequestID);
+router.put("/:commentId", auth,restrictTo(userRole.EMPLOYEE,userRole.ADMIN ,userRole.SUPERVISOR), updateComment);
 
 module.exports = router;
