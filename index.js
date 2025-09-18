@@ -57,6 +57,8 @@ const loginLogRoutes = require("./routes/loginLog");
 app.use("/login-log", loginLogRoutes);
 const opinionRoutes = require("./routes/Opinions");
 app.use("/opinion", opinionRoutes);
+const commentRoutes = require("./routes/comment");
+app.use("/comment", commentRoutes);
 
 const transactionRouter=require("./routes/transactions");
 app.use("/transaction", transactionRouter);
