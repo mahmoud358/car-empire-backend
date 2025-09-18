@@ -44,7 +44,6 @@ const getAllCommentByRequestID = async (requestID,limit,skip) => {
           ];
       
           const result = await Comment.aggregate(pipeline);
-      console.log(result);
       
           return {
             comments: result[0].comments,
