@@ -1,5 +1,7 @@
 const Comment = require("../models/comment");
 const APIERROR = require("../utils/apiError");
+const { getAllCommentByRequestID } = require("../utils/commentFunction");
+const { getPagination } = require("../utils/generalFunction");
 
 const { getRequestBuyingByID } = require("../utils/requestBuyingFunction");
 
@@ -37,7 +39,23 @@ const addComment = async (req, res, next) => {
 };
 
 const getCommentsByRequestID=async (req, res, next)=>{
+  try {
+    const {limit,page,skip}=getPagination(req.query);
+    const commentsdata = await getAllCommentByRequestID(req.params.requestId,limit,skip);
+    res.status(200).json({
+      status: "success",
+      message: "تم جلب التعليقات بنجاح",
+      data: commentsdata.comments,
+      pagination: {
+        currentPage: page,
+        totalPages: commentsdata.totalPages,
+        totalItems: commentsdata.totalItems,
+      }
+    });
+  }catch (error) {
+    next(new APIERROR(500, error.message));
+  }
 
 }
 
-module.exports = { addComment };
+module.exports = { addComment ,getCommentsByRequestID};
