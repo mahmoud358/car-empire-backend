@@ -11,8 +11,8 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:8000',
-        // url: 'https://car-empire-backend.vercel.app',
+        // url: 'http://localhost:8000',
+        url: 'https://car-empire-backend.vercel.app',
         description: 'Production server',
       },
     ],
@@ -33,7 +33,11 @@ const options = {
     path.join(__dirname, 'routes/job.js'),
     path.join(__dirname, 'routes/supplier.js'),
     path.join(__dirname, 'routes/car.js'),
-    path.join(__dirname, 'routes/requestBuying.js')
+    path.join(__dirname, 'routes/requestBuying.js'),
+    path.join(__dirname, 'routes/Opinions.js'),
+    path.join(__dirname, 'routes/loginLog.js'),
+    path.join(__dirname, 'routes/comment.js'),
+    path.join(__dirname, 'routes/transactions.js')
   ], // More explicit paths for better compatibility
 };
 

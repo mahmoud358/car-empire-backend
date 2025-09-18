@@ -37,7 +37,7 @@ const getUserLoginLogs = async (req, res, next) => {
     }
 
     return res.status(200).json({
-      success: true,
+      success: "success",
       message: "تم الحصول على سجلات الدخول بنجاح",
       logs,
       pagination: {

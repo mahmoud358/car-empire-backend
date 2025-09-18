@@ -566,8 +566,113 @@ const {validateRequest}=require("../middlewares/validateRequestBuying");
  */
 router.post("/add",validateRequest, reqBuyong.createRequestBuying);
 
+/**
+ * @swagger
+ * /request-buying/phone/num/{phoneNumber}:
+ *   get:
+ *     summary: Get requests by phone number
+ *     description: Retrieve paginated requests that contain the provided phone number.
+ *     tags: [Request Buying]
+ *     parameters:
+ *       - in: path
+ *         name: phoneNumber
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Phone number to search for (e.g. 0501234567)
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 10
+ *         description: Number of items per page
+ *     responses:
+ *       200:
+ *         description: Requests fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     requests:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/RequestBuying'
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     currentPage:
+ *                       type: integer
+ *                     totalPages:
+ *                       type: integer
+ *                     totalItems:
+ *                       type: integer
+ */
 router.get("/phone/num/:phoneNumber",reqBuyong.getAllRequestBuyingByPhone);
+
+/**
+ * @swagger
+ * /request-buying/numbers:
+ *   get:
+ *     summary: Get counts of requests grouped by type and status
+ *     description: Returns aggregated counts of requests grouped by type and status.
+ *     tags: [Request Buying]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Counts fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       status:
+ *                         type: array
+ *                         items:
+ *                           type: object
+ *                           properties:
+ *                             _id:
+ *                               type: string
+ *                             count:
+ *                               type: integer
+ *                       type:
+ *                         type: array
+ *                         items:
+ *                           type: object
+ *                           properties:
+ *                             _id:
+ *                               type: string
+ *                             count:
+ *                               type: integer
+ */
 router.get("/numbers",auth,restrictTo(userRole.ADMIN,userRole.SUPERVISOR,userRole.EMPLOYEE),reqBuyong.getNumsOfTypeAndStatus);
+
 /**
  * @swagger
  * /request-buying/all/{type}:
@@ -685,7 +790,7 @@ router.get("/all/:type",auth,restrictTo(userRole.ADMIN,userRole.SUPERVISOR,userR
  * /request-buying/{id}:
  *   get:
  *     summary: Get buying request by ID
- *     description: Retrieve a specific buying request by its ID along with available suppliers
+ *     description: Retrieve a specific buying request by its ID along with related comments, suppliers, and transactions
  *     tags: [Request Buying]
  *     security:
  *       - bearerAuth: []
@@ -702,29 +807,59 @@ router.get("/all/:type",auth,restrictTo(userRole.ADMIN,userRole.SUPERVISOR,userR
  *         content:
  *           application/json:
  *             schema:
- *               allOf:
- *                 - $ref: '#/components/schemas/ApiResponse'
- *                 - type: object
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
  *                   properties:
- *                     data:
+ *                     request:
+ *                       $ref: '#/components/schemas/RequestBuying'
+ *                     commentsData:
  *                       type: object
  *                       properties:
- *                         request:
- *                           $ref: '#/components/schemas/RequestBuying'
- *                         suppliers:
+ *                         comments:
  *                           type: array
  *                           items:
- *                             type: object
- *                             properties:
- *                               _id:
- *                                 type: string
- *                                 description: Supplier ID
- *                               name:
- *                                 type: string
- *                                 description: Supplier name
- *                               contactInfo:
- *                                 type: object
- *                                 description: Supplier contact information
+ *                             $ref: '#/components/schemas/Comment'
+ *                         totalItems:
+ *                           type: integer
+ *                         totalPages:
+ *                           type: integer
+ *                     suppliersData:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           _id:
+ *                             type: string
+ *                           name:
+ *                             type: string
+ *                     expensesData:
+ *                       type: object
+ *                       properties:
+ *                         transactions:
+ *                           type: array
+ *                           items:
+ *                             $ref: '#/components/schemas/Transaction'
+ *                         totalItems:
+ *                           type: integer
+ *                         totalPages:
+ *                           type: integer
+ *                     incomesData:
+ *                       type: object
+ *                       properties:
+ *                         transactions:
+ *                           type: array
+ *                           items:
+ *                             $ref: '#/components/schemas/Transaction'
+ *                         totalItems:
+ *                           type: integer
+ *                         totalPages:
+ *                           type: integer
  *             example:
  *               status: "success"
  *               message: "تم جلب الطلب بنجاح"
@@ -737,17 +872,40 @@ router.get("/all/:type",auth,restrictTo(userRole.ADMIN,userRole.SUPERVISOR,userR
  *                   fullName: "سارة أحمد السعد"
  *                   phoneNumber: ["0509876543"]
  *                   city: "جدة"
- *                   car:
- *                     brand: "Toyota"
- *                     model: "Camry 2023"
- *                     category: "Sedan"
- *                   createdAt: "2023-07-01T10:00:00.000Z"
- *                 suppliers:
- *                   - _id: "64a1b2c3d4e5f6789abcdef1"
- *                     name: "وكالة تويوتا"
- *                     contactInfo:
- *                       phone: "0112345678"
- *                       email: "info@toyota.com"
+ *                 commentsData:
+ *                   comments:
+ *                     - _id: "64a1b2c3d4e5f6789abcdea1"
+ *                       text: "تم التواصل مع العميل"
+ *                       userId: "64a1b2c3d4e5f6789abcde11"
+ *                       requestId: "64a1b2c3d4e5f6789abcdef0"
+ *                       createdAt: "2023-07-01T10:10:00.000Z"
+ *                   totalItems: 1
+ *                   totalPages: 1
+ *                 suppliersData:
+ *                   suppliers:
+ *                     - _id: "64a1b2c3d4e5f6789abcdef1"
+ *                       name: "وكالة تويوتا"
+ *                       funding: ['بنك الراجحي','بنك البلاد']
+ *                   totalItems: 1
+ *                   totalPages: 1
+ *                 expensesData:
+ *                   transactions:
+ *                     - _id: "64a1b2c3d4e5f6789abcde21"
+ *                       type: "expense"
+ *                       amount: 2500
+ *                       date: "2023-07-01"
+ *                       requestID: "64a1b2c3d4e5f6789abcdef0"
+ *                   totalItems: 1
+ *                   totalPages: 1
+ *                 incomesData:
+ *                   transactions:
+ *                     - _id: "64a1b2c3d4e5f6789abcde31"
+ *                       type: "income"
+ *                       amount: 5000
+ *                       date: "2023-07-01"
+ *                       requestID: "64a1b2c3d4e5f6789abcdef0"
+ *                   totalItems: 1
+ *                   totalPages: 1
  *       401:
  *         description: Unauthorized - Invalid or missing token
  *       403:
