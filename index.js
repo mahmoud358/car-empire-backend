@@ -7,43 +7,62 @@ const swaggerSpec = require('./swagger.js');
 
 dotenv.config();
 
-
-mongoose.connect(process.env.DATABASE_URL, {
-  // Connection timeout settings
-  serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
-  socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
-  connectTimeoutMS: 10000, // Give up initial connection after 10 seconds
-  
-  // Connection pool settings
-  maxPoolSize: 10, // Maintain up to 10 socket connections
-  minPoolSize: 5, // Maintain a minimum of 5 socket connections
-  maxIdleTimeMS: 30000, // Close connections after 30 seconds of inactivity
-  
-  // Buffer settings for serverless
-  bufferCommands: false, // Disable mongoose buffering
-  bufferMaxEntries: 0, // Disable mongoose buffering
-  
-  // Retry settings
-  retryWrites: true,
-  retryReads: true
-})
-  .then(() => console.log("✅ Connected to MongoDB"))
-  .catch((err) => {
-    console.error("❌ DB Connection Error:", err.message);
-    console.error(err);
-  });
-
-
-
+// Initialize Express app first
 const app = express();
 
+// MongoDB connection with proper serverless configuration
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.DATABASE_URL, {
+      // Connection timeout settings
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+      connectTimeoutMS: 10000,
+      
+      // Connection pool settings
+      maxPoolSize: 10,
+      minPoolSize: 1, // Reduced for serverless
+      maxIdleTimeMS: 30000,
+      
+      // Buffer settings for serverless - ENABLE buffering
+      bufferCommands: true, // Enable buffering for serverless
+      bufferMaxEntries: 0,
+      
+      // Retry settings
+      retryWrites: true,
+      retryReads: true
+    });
+    console.log("✅ Connected to MongoDB");
+  } catch (err) {
+    console.error("❌ DB Connection Error:", err.message);
+    console.error(err);
+    process.exit(1); // Exit if DB connection fails
+  }
+};
+
+// Handle connection events
+mongoose.connection.on('connected', () => {
+  console.log('Mongoose connected to MongoDB');
+});
+
+mongoose.connection.on('error', (err) => {
+  console.error('Mongoose connection error:', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.log('Mongoose disconnected');
+});
+
+// Graceful shutdown
+process.on('SIGINT', async () => {
+  await mongoose.connection.close();
+  process.exit(0);
+});
 
 app.use(cors());
 app.use(express.json());
 
 // Swagger UI setup
-// app.use('/api-docs/', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-// ✅ Serve Swagger JSON directly
 app.get('/swagger.json', (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   res.send(swaggerSpec);
@@ -55,7 +74,7 @@ app.use(
   swaggerUi.setup(swaggerSpec, { explorer: true })
 );
 
-
+// Routes
 const userRoutes = require("./routes/user");
 app.use("/user", userRoutes);
 const blogRoutes = require("./routes/blog");
@@ -70,7 +89,6 @@ app.use("/car", carRouter);
 const reqBuyingRouter = require("./routes/requestBuying");
 app.use("/request-buying", reqBuyingRouter);
 
-
 const loginLogRoutes = require("./routes/loginLog");
 app.use("/login-log", loginLogRoutes);
 const opinionRoutes = require("./routes/Opinions");
@@ -78,10 +96,10 @@ app.use("/opinion", opinionRoutes);
 const commentRoutes = require("./routes/comment");
 app.use("/comment", commentRoutes);
 
-const transactionRouter=require("./routes/transactions");
+const transactionRouter = require("./routes/transactions");
 app.use("/transaction", transactionRouter);
 
-// ✅ 404 Handler (Catch-all)
+// 404 Handler
 app.use((req, res, next) => {
   res.status(404).json({
     status: "Failed",
@@ -89,7 +107,7 @@ app.use((req, res, next) => {
   });
 });
 
-// ✅ Global Error Handler
+// Global Error Handler
 app.use((error, req, res, next) => {
   const statusCode = error.statusCode || 500;
   let message = error.message || "Something went wrong";
@@ -111,8 +129,14 @@ app.use((error, req, res, next) => {
   });
 });
 
-// ✅ Start Server
-const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
+// Start server only after DB connection
+const startServer = async () => {
+  await connectDB();
+  
+  const PORT = process.env.PORT || 8000;
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+  });
+};
+
+startServer();
