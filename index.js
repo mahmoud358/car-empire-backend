@@ -8,7 +8,25 @@ const swaggerSpec = require('./swagger.js');
 dotenv.config();
 
 
-mongoose.connect(process.env.DATABASE_URL)
+mongoose.connect(process.env.DATABASE_URL, {
+  // Connection timeout settings
+  serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
+  socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+  connectTimeoutMS: 10000, // Give up initial connection after 10 seconds
+  
+  // Connection pool settings
+  maxPoolSize: 10, // Maintain up to 10 socket connections
+  minPoolSize: 5, // Maintain a minimum of 5 socket connections
+  maxIdleTimeMS: 30000, // Close connections after 30 seconds of inactivity
+  
+  // Buffer settings for serverless
+  bufferCommands: false, // Disable mongoose buffering
+  bufferMaxEntries: 0, // Disable mongoose buffering
+  
+  // Retry settings
+  retryWrites: true,
+  retryReads: true
+})
   .then(() => console.log("✅ Connected to MongoDB"))
   .catch((err) => {
     console.error("❌ DB Connection Error:", err.message);
